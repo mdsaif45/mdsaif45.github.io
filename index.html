@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MD SAIF</title>
-<meta name="description" content="MD SAIF — software engineer crafting resilient systems and interfaces.">
+<meta name="description" content="MD SAIF — full-time software engineer building desktop, web, mobile and AI tooling. Taking select side projects.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@100..900&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -28,7 +28,9 @@
     -webkit-font-smoothing: antialiased;
     cursor: none;
   }
-  a { color: inherit; text-decoration: none; cursor: none; }
+  a, button { color: inherit; text-decoration: none; cursor: none; }
+  button { background: none; border: 0; font: inherit; }
+  ul { list-style: none; }
 
   /* ---------- stage ---------- */
   .hero {
@@ -36,12 +38,13 @@
     height: 100svh;
     min-height: 560px;
     display: grid;
-    grid-template-rows: auto 1fr auto;
+    grid-template-rows: auto minmax(0, 1fr) auto;
     padding: clamp(16px, 2.4vw, 36px);
     isolation: isolate;
     overflow: hidden;
   }
-  #field { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; }
+  #field { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; transition: opacity 1s var(--ease); }
+  .hero[data-view="work"] #field, .hero[data-view="skills"] #field { opacity: .45; }
   .glow {
     position: absolute; z-index: -1; pointer-events: none;
     width: 70vmax; height: 70vmax; border-radius: 50%;
@@ -63,7 +66,7 @@
 
   /* ---------- chrome ---------- */
   .bar {
-    display: flex; justify-content: space-between; align-items: center; gap: 16px;
+    display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px;
     font: 500 11px/1 "JetBrains Mono", monospace; letter-spacing: .12em; text-transform: uppercase;
     color: var(--mute);
   }
@@ -71,16 +74,42 @@
   .bar > *:nth-child(2) { animation-delay: .1s; } .bar > *:nth-child(3) { animation-delay: .2s; }
   @keyframes drop { to { opacity: 1; transform: none; } }
   .mark { color: var(--ink); }
-  .status { display: inline-flex; align-items: center; gap: 10px; }
-  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); position: relative; }
+  .status { display: inline-flex; align-items: center; gap: 10px; justify-self: end; white-space: nowrap; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); position: relative; flex: none; }
   .dot::after {
     content: ""; position: absolute; inset: 0; border-radius: 50%; background: var(--accent);
     animation: ping 2s var(--ease) infinite;
   }
   @keyframes ping { 0% { transform: scale(1); opacity: .8; } 100% { transform: scale(3.4); opacity: 0; } }
 
-  /* ---------- center ---------- */
-  .center { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+  .nav { display: flex; gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 999px; backdrop-filter: blur(8px); }
+  .tab {
+    position: relative; padding: 9px 16px; border-radius: 999px;
+    font: 500 11px/1 "JetBrains Mono", monospace; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--mute); transition: color .4s var(--ease), background .4s var(--ease);
+  }
+  .tab sup { font-size: 8px; margin-left: 3px; color: var(--accent); }
+  .tab:hover { color: var(--ink); }
+  .tab[aria-selected="true"] { background: var(--ink); color: var(--bg); }
+  .tab[aria-selected="true"] sup { color: var(--bg); }
+
+  /* ---------- views ---------- */
+  .stage { display: grid; min-height: 0; grid-template: minmax(0, 1fr) / minmax(0, 1fr); }
+  .view {
+    grid-area: 1 / 1; min-height: 0; align-self: center; max-height: 100%;
+    opacity: 0; visibility: hidden; pointer-events: none;
+    transform: translateY(24px);
+    transition: opacity .6s var(--ease), transform .9s var(--ease), visibility 0s .6s;
+  }
+  .view.active {
+    opacity: 1; visibility: visible; pointer-events: auto; transform: none;
+    transition: opacity .8s var(--ease) .15s, transform 1.1s var(--ease) .15s, visibility 0s;
+  }
+  .scroll { overflow-y: auto; scrollbar-width: none; padding: 8px 0; }
+  .scroll::-webkit-scrollbar { display: none; }
+
+  /* index */
+  .v-index { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; align-self: stretch; }
   .eyebrow {
     font: 400 clamp(15px, 1.4vw, 20px)/1.2 "Instrument Serif", serif; font-style: italic;
     color: var(--accent-2); margin-bottom: clamp(8px, 1.5vw, 20px);
@@ -108,14 +137,12 @@
     letter-spacing: -.02em; color: var(--accent);
   }
   @keyframes rise { to { transform: none; } }
-
   .tagline {
     margin-top: clamp(14px, 2.4vw, 34px);
-    max-width: 34ch;
+    max-width: 36ch;
     font-size: clamp(16px, 1.55vw, 22px); line-height: 1.4; font-weight: 300; color: var(--ink);
     opacity: 0; animation: fade 1.2s var(--ease) 1.2s forwards;
   }
-  .tagline em { font-family: "Instrument Serif", serif; font-size: 1.2em; }
   .swap { display: inline-grid; vertical-align: bottom; overflow: hidden; height: 1.4em; color: var(--accent); text-align: left; }
   .swap span {
     grid-area: 1 / 1; font-family: "Instrument Serif", serif; font-style: italic; font-size: 1.2em; line-height: 1.2;
@@ -124,6 +151,84 @@
   .swap span.on { transform: none; }
   .swap span.out { transform: translateY(-110%); }
   @keyframes fade { to { opacity: 1; } }
+  .cta-row { margin-top: clamp(18px, 2.6vw, 34px); display: flex; gap: 10px; opacity: 0; animation: fade 1.2s var(--ease) 1.4s forwards; }
+
+  /* shared view heading */
+  .vhead { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: clamp(10px, 1.6vw, 22px); }
+  .vhead h2 { font: 400 clamp(36px, 5.4vw, 84px)/.9 "Instrument Serif", serif; font-style: italic; letter-spacing: -.02em; }
+  .vhead h2 span { color: var(--accent); }
+  .vhead p { font: 500 11px/1.6 "JetBrains Mono", monospace; letter-spacing: .1em; text-transform: uppercase; color: var(--mute); text-align: right; max-width: 34ch; }
+
+  /* work */
+  .v-work { width: min(1180px, 100%); justify-self: center; }
+  .row {
+    position: relative; display: grid; grid-template-columns: 44px minmax(0, 1fr) minmax(0, 1.25fr) minmax(0, .9fr) 28px;
+    align-items: center; gap: clamp(10px, 2vw, 28px);
+    padding: clamp(10px, 1.3vh, 16px) 4px; border-top: 1px solid var(--line);
+    isolation: isolate;
+  }
+  .row:last-child { border-bottom: 1px solid var(--line); }
+  .row::before {
+    content: ""; position: absolute; inset: 0; z-index: -1; background: rgba(241, 237, 228, .04);
+    transform: scaleY(0); transform-origin: bottom; transition: transform .5s var(--ease);
+  }
+  .row:hover::before { transform: none; }
+  .num { font: 500 11px/1 "JetBrains Mono", monospace; color: var(--mute); }
+  .pname {
+    font-size: clamp(20px, 2.3vw, 34px); font-weight: 500; letter-spacing: -.025em; line-height: 1.05;
+    transition: transform .6s var(--ease), color .4s var(--ease);
+  }
+  .pname small {
+    display: inline-block; vertical-align: middle; margin-left: 8px; padding: 4px 7px 3px; border-radius: 99px;
+    font: 500 9px/1 "JetBrains Mono", monospace; letter-spacing: .1em; text-transform: uppercase;
+    border: 1px solid currentColor; color: var(--accent-2);
+  }
+  .pdesc { font-size: clamp(13px, 1vw, 15px); line-height: 1.4; color: var(--mute); font-weight: 400; }
+  .stack { font: 500 10px/1.6 "JetBrains Mono", monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--mute); }
+  .go { justify-self: end; font-size: 18px; transition: transform .5s var(--ease), color .4s var(--ease); }
+  .row:hover .pname { transform: translateX(10px); color: var(--accent); }
+  .row:hover .pdesc { color: var(--ink); }
+  .row:hover .go { transform: translate(3px, -3px); color: var(--accent); }
+
+  .preview {
+    position: fixed; left: 0; top: 0; z-index: 8; pointer-events: none;
+    width: 260px; aspect-ratio: 4 / 3; margin: -98px 0 0 28px; border-radius: 14px; overflow: hidden;
+    background: var(--pv-bg, #222); box-shadow: 0 30px 80px rgba(0, 0, 0, .55);
+    transform-origin: 0 50%;
+    opacity: 0; scale: .6; rotate: -6deg;
+    transition: opacity .35s var(--ease), scale .55s var(--ease), rotate .55s var(--ease);
+  }
+  .preview.on { opacity: 1; scale: 1; rotate: 0deg; }
+  .preview .pv-num { position: absolute; left: 16px; top: 12px; font: 500 11px/1 "JetBrains Mono", monospace; color: rgba(255, 255, 255, .75); letter-spacing: .1em; }
+  .preview .pv-mono {
+    position: absolute; right: -6px; bottom: -28px; font: 400 150px/1 "Instrument Serif", serif; font-style: italic;
+    color: rgba(255, 255, 255, .92); letter-spacing: -.04em;
+  }
+  .preview .pv-tags { position: absolute; left: 16px; bottom: 14px; right: 40%; display: flex; flex-wrap: wrap; gap: 4px; }
+  .preview .pv-tags span {
+    padding: 4px 6px 3px; border-radius: 99px; background: rgba(0, 0, 0, .28); color: #fff;
+    font: 500 9px/1 "JetBrains Mono", monospace; letter-spacing: .06em; text-transform: uppercase;
+  }
+
+  /* skills */
+  .v-skills { width: min(1180px, 100%); justify-self: center; }
+  .cols { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--line); }
+  .col { padding: clamp(14px, 2vh, 24px) clamp(10px, 1.4vw, 22px) 0 0; }
+  .col + .col { border-left: 1px solid var(--line); padding-left: clamp(10px, 1.4vw, 22px); }
+  .col h3 { font: 500 10px/1.4 "JetBrains Mono", monospace; letter-spacing: .12em; text-transform: uppercase; color: var(--mute); margin-bottom: clamp(10px, 1.6vh, 18px); }
+  .col h3 b { color: var(--accent); font-weight: 500; }
+  .col li {
+    font-size: clamp(17px, 1.75vw, 26px); line-height: 1.32; font-weight: 300; letter-spacing: -.015em;
+    font-variation-settings: "wght" 300;
+    transition: font-variation-settings .5s var(--ease), color .4s var(--ease), transform .5s var(--ease);
+  }
+  .col li:hover { font-variation-settings: "wght" 650; color: var(--accent); transform: translateX(6px); }
+  .ethos {
+    margin-top: clamp(16px, 3vh, 34px); padding-top: clamp(12px, 2vh, 20px); border-top: 1px solid var(--line);
+    display: flex; justify-content: space-between; align-items: end; gap: 20px;
+  }
+  .ethos p { font: 400 clamp(20px, 2.4vw, 36px)/1.15 "Instrument Serif", serif; max-width: 30ch; }
+  .ethos p em { color: var(--accent); }
 
   /* ---------- foot ---------- */
   .foot {
@@ -138,7 +243,7 @@
     position: relative; display: inline-flex; align-items: center; gap: 8px;
     padding: 12px 20px; border: 1px solid var(--line); border-radius: 999px;
     font: 500 12px/1 "JetBrains Mono", monospace; letter-spacing: .08em; text-transform: uppercase;
-    overflow: hidden; transition: color .5s var(--ease), border-color .5s var(--ease);
+    overflow: hidden; isolation: isolate; transition: color .5s var(--ease), border-color .5s var(--ease);
   }
   .pill::before {
     content: ""; position: absolute; inset: 0; z-index: -1; background: var(--ink);
@@ -150,7 +255,7 @@
   .pill.primary::before { background: var(--accent); }
   .pill.primary:hover { color: var(--bg); }
   .arrow { display: inline-block; transition: transform .5s var(--ease); }
-  .pill:hover .arrow { transform: translate(3px, -3px) rotate(0deg); }
+  .pill:hover .arrow { transform: translate(3px, -3px); }
   .meta.right { justify-self: end; text-align: right; }
 
   /* ---------- cursor ---------- */
@@ -163,62 +268,193 @@
   .cursor.big { width: 84px; height: 84px; margin: -42px 0 0 -42px; }
 
   /* ---------- responsive ---------- */
+  @media (max-width: 980px) {
+    .row { grid-template-columns: 34px minmax(0, 1fr) minmax(0, 1.2fr) 22px; }
+    .stack { display: none; }
+    .cols { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .col:nth-child(3) { border-left: 0; padding-left: 0; }
+    .col:nth-child(n+3) { border-top: 1px solid var(--line); margin-top: 14px; }
+  }
   @media (max-width: 760px) {
-    body, a { cursor: auto; }
-    .cursor { display: none; }
-    .bar .clock { display: none; }
+    body, a, button { cursor: auto; }
+    .cursor, .preview { display: none; }
+    .bar { grid-template-columns: auto 1fr; }
+    .mark { display: none; }
+    .status { font-size: 10px; letter-spacing: .08em; }
+    .tab { padding: 8px 11px; }
+    .vhead p { display: none; }
+    .row { grid-template-columns: 26px minmax(0, 1fr) 18px; align-items: start; }
+    .pname { grid-column: 2; }
+    .pdesc { grid-column: 2; grid-row: 2; }
+    .go { grid-column: 3; grid-row: 1; }
+    .ethos { flex-direction: column; align-items: start; }
     .foot { grid-template-columns: 1fr; justify-items: center; text-align: center; }
     .meta, .meta.right { justify-self: center; text-align: center; }
     .meta.left { display: none; }
     .links { flex-wrap: wrap; justify-content: center; }
     .pill { padding: 11px 16px; }
   }
-  @media (hover: none) { body, a { cursor: auto; } .cursor { display: none; } }
+  @media (max-height: 760px) {
+    .row { padding: 7px 4px; }
+    .pname { font-size: clamp(18px, 1.9vw, 26px); }
+    .pdesc { font-size: 13px; }
+    .vhead h2 { font-size: clamp(32px, 4.4vw, 60px); }
+    .col li { font-size: clamp(16px, 1.5vw, 22px); }
+  }
+  @media (max-width: 420px) { .status .long { display: none; } }
+  @media (hover: none) { body, a, button { cursor: auto; } .cursor, .preview { display: none; } }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: .001s !important; animation-delay: 0s !important; transition-duration: .001s !important; }
   }
 </style>
 </head>
 <body>
-<section class="hero" id="hero" aria-label="MD SAIF">
+<section class="hero" id="hero" data-view="index" aria-label="MD SAIF">
   <canvas id="field" aria-hidden="true"></canvas>
   <div class="glow" id="glow" aria-hidden="true"></div>
   <div class="grain" aria-hidden="true"></div>
 
   <header class="bar">
     <span class="mark">MD&mdash;Saif &copy;2026</span>
-    <span class="clock" id="clock">IST 00:00:00</span>
-    <span class="status"><i class="dot"></i>Open to new work</span>
+    <nav class="nav" role="tablist" aria-label="Views">
+      <button class="tab" role="tab" data-view="index" aria-selected="true">Index</button>
+      <button class="tab" role="tab" data-view="work" aria-selected="false">Work<sup>08</sup></button>
+      <button class="tab" role="tab" data-view="skills" aria-selected="false">Skills</button>
+    </nav>
+    <span class="status"><i class="dot"></i><span><span class="long">Full-time &middot; </span>Select side gigs</span></span>
   </header>
 
-  <div class="center">
-    <p class="eyebrow">Software engineer &amp; builder</p>
-    <h1 class="name" id="name" aria-label="MD SAIF">
-      <span class="word" data-word="MD"></span><span class="gap"></span><span class="word serif" data-word="Saif"></span>
-    </h1>
-    <p class="tagline">
-      I build systems that hold under pressure and interfaces that feel
-      <span class="swap" id="swap"><span class="on">inevitable.</span><span>effortless.</span><span>alive.</span><span>honest.</span></span>
-    </p>
-  </div>
+  <main class="stage">
+    <!-- INDEX -->
+    <div class="view v-index active" data-view="index" role="tabpanel">
+      <p class="eyebrow">Software engineer &amp; builder</p>
+      <h1 class="name" id="name" aria-label="MD SAIF">
+        <span class="word" data-word="MD"></span><span class="gap"></span><span class="word serif" data-word="Saif"></span>
+      </h1>
+      <p class="tagline">
+        Engineer by day, side-project builder by night. I ship software that feels
+        <span class="swap" id="swap"><span class="on">inevitable.</span><span>effortless.</span><span>alive.</span><span>honest.</span></span>
+      </p>
+      <div class="cta-row">
+        <button class="pill primary magnet" data-goto="work">See the work <span class="arrow">&rarr;</span></button>
+        <button class="pill magnet" data-goto="skills">Toolbox <span class="arrow">&rarr;</span></button>
+      </div>
+    </div>
+
+    <!-- WORK -->
+    <div class="view v-work scroll" data-view="work" role="tabpanel" aria-label="Selected work">
+      <div class="vhead">
+        <h2>Selected <span>work</span></h2>
+        <p>Desktop, web, mobile &amp; AI tooling<br>built outside office hours</p>
+      </div>
+      <ul id="projects"></ul>
+    </div>
+
+    <!-- SKILLS -->
+    <div class="view v-skills scroll" data-view="skills" role="tabpanel" aria-label="Skills">
+      <div class="vhead">
+        <h2>The <span>toolbox</span></h2>
+        <p>From the database<br>to the pixel</p>
+      </div>
+      <div class="cols">
+        <div class="col"><h3><b>01</b> &mdash; Languages</h3>
+          <ul><li>TypeScript</li><li>JavaScript</li><li>Java</li><li>C# / .NET</li><li>Rust</li><li>Dart</li><li>Python</li><li>SQL</li></ul></div>
+        <div class="col"><h3><b>02</b> &mdash; Apps &amp; UI</h3>
+          <ul><li>React</li><li>Tailwind CSS</li><li>Electron</li><li>WinUI 3</li><li>Flutter</li><li>VS Code extensions</li><li>PWAs</li></ul></div>
+        <div class="col"><h3><b>03</b> &mdash; Backend &amp; Data</h3>
+          <ul><li>Node &amp; Express</li><li>Spring Boot</li><li>Oracle &middot; Postgres</li><li>MySQL &middot; SQLite</li><li>MongoDB &middot; Redis</li><li>Drizzle ORM</li><li>Event sourcing</li></ul></div>
+        <div class="col"><h3><b>04</b> &mdash; AI &amp; Tooling</h3>
+          <ul><li>LLM agents</li><li>MCP servers</li><li>Claude &middot; Gemini</li><li>Multi-agent orchestration</li><li>Git workflows</li><li>Win32 / native</li><li>Crypto (AES-GCM, Argon2)</li></ul></div>
+      </div>
+      <div class="ethos">
+        <p>Small, sharp tools. <em>Offline-first</em> where it matters. Boring tech, delightful surfaces.</p>
+        <a class="pill primary magnet" href="https://github.com/mdsaif45" target="_blank" rel="noopener">All repos <span class="arrow">&nearr;</span></a>
+      </div>
+    </div>
+  </main>
 
   <footer class="foot">
-    <div class="meta left">Backend &middot; Frontend &middot; AI<br><b>Engineering with taste</b></div>
+    <div class="meta left">Local time<br><b id="clock">IST 00:00:00</b></div>
     <nav class="links">
       <a class="pill primary magnet" href="https://github.com/mdsaif45" target="_blank" rel="noopener">GitHub <span class="arrow">&nearr;</span></a>
       <a class="pill magnet" href="#" aria-label="LinkedIn">LinkedIn <span class="arrow">&nearr;</span></a>
       <a class="pill magnet" href="#" aria-label="Contact">Say hello <span class="arrow">&nearr;</span></a>
     </nav>
-    <div class="meta right">Scroll not required<br><b>Everything is here</b></div>
+    <div class="meta right">Full-time engineer<br><b>Side projects by night</b></div>
   </footer>
 </section>
 
+<div class="preview" id="preview" aria-hidden="true">
+  <span class="pv-num"></span><div class="pv-tags"></div><span class="pv-mono"></span>
+</div>
 <div class="cursor" id="cursor" aria-hidden="true"></div>
 
 <script>
 (() => {
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const mouse = { x: innerWidth / 2, y: innerHeight / 2, active: false };
+  const hero = document.getElementById("hero");
+  const cursor = document.getElementById("cursor");
+
+  /* ---- projects ---- */
+  const GH = "https://github.com/mdsaif45/";
+  const projects = [
+    { name: "Forge", repo: "forge-orchestrator", desc: "AI engineering control plane. Forge owns state; agents are replaceable workers.", stack: ["TypeScript", "Electron", "React", "SQLite"], hue: 18 },
+    { name: "ClinicPilot", repo: "ClinicPilot", desc: "Offline-first practice intelligence for small clinics: revenue, patients, locations.", stack: ["Flutter", "Riverpod", "Drift"], hue: 160 },
+    { name: "Noto", repo: "Noto", desc: "Notes that live where you work. A Windows-native contextual notes app.", stack: ["C#", "WinUI 3", "SQLite"], hue: 48 },
+    { name: "FolderVault", repo: "foldervault", live: true, desc: "Native folder locker with first-class Explorer integration. Right-click to lock.", stack: ["Rust", "Win32", "AES-256-GCM"], hue: 220 },
+    { name: "ShinobiShelf", repo: "ShinobiShelf", live: true, desc: "Peer-to-peer community book sharing: lend, borrow, run reading clubs.", stack: ["React", "Express", "Drizzle", "PWA"], hue: 280 },
+    { name: "Dr. Zaid Homeocare", repo: "dr-zaid-homeocare", live: true, desc: "Clinic management & EMR with AI repertory assistant and PDF prescriptions.", stack: ["React", "Postgres", "Gemini"], hue: 140 },
+    { name: "BranchLift", repo: "BranchLift", desc: "VS Code extension: pull files, folders or single hunks from any Git branch.", stack: ["TypeScript", "VS Code", "Git"], hue: 200 },
+    { name: "MCP Servers", repo: "mcp-servers", desc: "Read-only MCP servers for Oracle, MySQL, Redis and MongoDB. Env-configured.", stack: ["Node", "MCP", "Databases"], hue: 330 },
+  ];
+  const list = document.getElementById("projects");
+  projects.forEach((p, i) => {
+    const li = document.createElement("li");
+    const url = p.live ? `https://mdsaif45.github.io/${p.repo}/` : GH + p.repo;
+    li.innerHTML = `<a class="row" href="${url}" target="_blank" rel="noopener" data-i="${i}">
+      <span class="num">${String(i + 1).padStart(2, "0")}</span>
+      <span class="pname">${p.name}${p.live ? "<small>Live</small>" : ""}</span>
+      <span class="pdesc">${p.desc}</span>
+      <span class="stack">${p.stack.join(" · ")}</span>
+      <span class="go">&nearr;</span></a>`;
+    list.appendChild(li);
+  });
+
+  /* ---- hover preview card ---- */
+  const pv = document.getElementById("preview");
+  let px = 0, py = 0;
+  list.addEventListener("pointerover", e => {
+    const row = e.target.closest(".row"); if (!row) return;
+    const p = projects[row.dataset.i];
+    pv.style.setProperty("--pv-bg", `linear-gradient(135deg, hsl(${p.hue} 85% 55%), hsl(${(p.hue + 40) % 360} 70% 22%))`);
+    pv.querySelector(".pv-num").textContent = `${String(+row.dataset.i + 1).padStart(2, "0")} / ${String(projects.length).padStart(2, "0")}`;
+    pv.querySelector(".pv-mono").textContent = p.name[0] + (p.name[1] || "").toLowerCase();
+    pv.querySelector(".pv-tags").innerHTML = p.stack.map(s => `<span>${s}</span>`).join("");
+    pv.classList.add("on");
+  });
+  list.addEventListener("pointerleave", () => pv.classList.remove("on"));
+
+  /* ---- views ---- */
+  const tabs = [...document.querySelectorAll(".tab")];
+  const views = [...document.querySelectorAll(".view")];
+  function show(v, push = true) {
+    if (!views.some(x => x.dataset.view === v)) v = "index";
+    hero.dataset.view = v;
+    tabs.forEach(t => t.setAttribute("aria-selected", t.dataset.view === v));
+    views.forEach(x => { x.classList.toggle("active", x.dataset.view === v); if (x.dataset.view === v) x.scrollTop = 0; });
+    pv.classList.remove("on");
+    if (push) history.replaceState(null, "", v === "index" ? location.pathname : "#" + v);
+  }
+  tabs.forEach(t => t.addEventListener("click", () => show(t.dataset.view)));
+  document.querySelectorAll("[data-goto]").forEach(b => b.addEventListener("click", () => show(b.dataset.goto)));
+  addEventListener("keydown", e => {
+    if (e.target.closest("input, textarea")) return;
+    const k = { "1": "index", "2": "work", "3": "skills" }[e.key];
+    if (k) show(k);
+  });
+  show(location.hash.slice(1) || "index", false);
+  addEventListener("hashchange", () => show(location.hash.slice(1) || "index", false));
 
   /* ---- split name into letters ---- */
   let idx = 0;
@@ -238,10 +474,7 @@
 
   /* ---- clock ---- */
   const clock = document.getElementById("clock");
-  const tick = () => {
-    const t = new Date().toLocaleTimeString("en-GB", { timeZone: "Asia/Kolkata", hour12: false });
-    clock.textContent = "IST " + t;
-  };
+  const tick = () => { clock.textContent = "IST " + new Date().toLocaleTimeString("en-GB", { timeZone: "Asia/Kolkata", hour12: false }); };
   tick(); setInterval(tick, 1000);
 
   /* ---- rotating word ---- */
@@ -256,22 +489,23 @@
   }, 2600);
 
   /* ---- cursor + magnet ---- */
-  const cursor = document.getElementById("cursor");
   let cx = mouse.x, cy = mouse.y;
   addEventListener("pointermove", e => { mouse.x = e.clientX; mouse.y = e.clientY; mouse.active = true; });
-  document.querySelectorAll(".magnet").forEach(el => {
+  const grow = el => {
     el.addEventListener("pointerenter", () => cursor.classList.add("big"));
-    el.addEventListener("pointerleave", () => { cursor.classList.remove("big"); el.style.transform = ""; });
+    el.addEventListener("pointerleave", () => cursor.classList.remove("big"));
+  };
+  document.querySelectorAll(".magnet").forEach(el => {
+    grow(el);
+    el.addEventListener("pointerleave", () => { el.style.transform = ""; });
     el.addEventListener("pointermove", e => {
       const r = el.getBoundingClientRect();
       const dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2);
       el.style.transform = `translate(${dx * .3}px, ${dy * .4}px)`;
     });
   });
-  document.getElementById("name").addEventListener("pointerenter", () => cursor.classList.add("big"));
-  document.getElementById("name").addEventListener("pointerleave", () => cursor.classList.remove("big"));
+  grow(document.getElementById("name"));
 
-  /* ---- glow parallax ---- */
   const glow = document.getElementById("glow");
 
   /* ---- flow field ---- */
@@ -288,7 +522,6 @@
   function spawn() {
     return { x: Math.random() * W, y: Math.random() * H, life: Math.random() * 200 + 60, hot: Math.random() < .12 };
   }
-  // cheap smooth noise from layered sines
   const noise = (x, y, t) =>
     Math.sin(x * .0016 + t * .00021) + Math.cos(y * .0019 - t * .00017) +
     Math.sin((x + y) * .0011 + t * .00013) * .8;
@@ -297,21 +530,23 @@
   resize();
 
   function frame(t) {
-    // cursor easing
     cx += (mouse.x - cx) * .18; cy += (mouse.y - cy) * .18;
     cursor.style.transform = `translate(${cx}px, ${cy}px)`;
+    px += (mouse.x - px) * .12; py += (mouse.y - py) * .12;
+    pv.style.transform = `translate(${px}px, ${py}px)`;
 
     const nx = mouse.x / innerWidth - .5, ny = mouse.y / innerHeight - .5;
     glow.style.transform = `translate(${nx * 12}vw, ${ny * 12}vh)`;
 
-    // letters react to proximity
-    for (const c of chars) {
-      const r = c.getBoundingClientRect();
-      const d = Math.hypot(mouse.x - (r.left + r.width / 2), mouse.y - (r.top + r.height / 2));
-      const k = Math.max(0, 1 - d / (innerWidth * .28));
-      const target = 220 + k * 680;
-      c._w = (c._w ?? 300) + (target - (c._w ?? 300)) * .12;
-      c.style.setProperty("--w", c._w.toFixed(0));
+    if (hero.dataset.view === "index") {
+      for (const c of chars) {
+        const r = c.getBoundingClientRect();
+        const d = Math.hypot(mouse.x - (r.left + r.width / 2), mouse.y - (r.top + r.height / 2));
+        const k = Math.max(0, 1 - d / (innerWidth * .28));
+        const target = 220 + k * 680;
+        c._w = (c._w ?? 300) + (target - (c._w ?? 300)) * .12;
+        c.style.setProperty("--w", c._w.toFixed(0));
+      }
     }
 
     if (!reduce) {
@@ -324,7 +559,7 @@
         let vx = Math.cos(a) * 1.1 * DPR, vy = Math.sin(a) * 1.1 * DPR;
         if (mouse.active) {
           const dx = p.x - mx, dy = p.y - my, d = Math.hypot(dx, dy);
-          if (d < R) { const f = (1 - d / R) * 4 * DPR; vx += (dx / d) * f; vy += (dy / d) * f; }
+          if (d < R && d > 0) { const f = (1 - d / R) * 4 * DPR; vx += (dx / d) * f; vy += (dy / d) * f; }
         }
         const ox = p.x, oy = p.y;
         p.x += vx; p.y += vy; p.life--;
