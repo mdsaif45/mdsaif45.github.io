@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MD SAIF</title>
+<meta name="description" content="MD SAIF — software engineer crafting resilient systems and interfaces.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@100..900&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0b0a;
+    --ink: #f1ede4;
+    --mute: #8a867c;
+    --line: rgba(241, 237, 228, .12);
+    --accent: #ff4d1f;
+    --accent-2: #ffb36b;
+    --ease: cubic-bezier(.16, 1, .3, 1);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Inter Tight", system-ui, sans-serif;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+    cursor: none;
+  }
+  a { color: inherit; text-decoration: none; cursor: none; }
+
+  /* ---------- stage ---------- */
+  .hero {
+    position: relative;
+    height: 100svh;
+    min-height: 560px;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    padding: clamp(16px, 2.4vw, 36px);
+    isolation: isolate;
+    overflow: hidden;
+  }
+  #field { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; }
+  .glow {
+    position: absolute; z-index: -1; pointer-events: none;
+    width: 70vmax; height: 70vmax; border-radius: 50%;
+    left: 50%; top: 50%; translate: -50% -50%;
+    background: radial-gradient(circle, rgba(255, 77, 31, .22), rgba(255, 77, 31, 0) 60%);
+    filter: blur(40px);
+    transition: transform 1.2s var(--ease);
+  }
+  .grain {
+    position: absolute; inset: -50%; z-index: 5; pointer-events: none; opacity: .09;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    animation: grain 1s steps(6) infinite;
+  }
+  @keyframes grain {
+    0% { transform: translate(0, 0); } 20% { transform: translate(-3%, 2%); }
+    40% { transform: translate(2%, -4%); } 60% { transform: translate(-4%, -1%); }
+    80% { transform: translate(3%, 3%); } 100% { transform: translate(0, 0); }
+  }
+
+  /* ---------- chrome ---------- */
+  .bar {
+    display: flex; justify-content: space-between; align-items: center; gap: 16px;
+    font: 500 11px/1 "JetBrains Mono", monospace; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--mute);
+  }
+  .bar > * { opacity: 0; transform: translateY(-8px); animation: drop .9s var(--ease) forwards; }
+  .bar > *:nth-child(2) { animation-delay: .1s; } .bar > *:nth-child(3) { animation-delay: .2s; }
+  @keyframes drop { to { opacity: 1; transform: none; } }
+  .mark { color: var(--ink); }
+  .status { display: inline-flex; align-items: center; gap: 10px; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); position: relative; }
+  .dot::after {
+    content: ""; position: absolute; inset: 0; border-radius: 50%; background: var(--accent);
+    animation: ping 2s var(--ease) infinite;
+  }
+  @keyframes ping { 0% { transform: scale(1); opacity: .8; } 100% { transform: scale(3.4); opacity: 0; } }
+
+  /* ---------- center ---------- */
+  .center { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+  .eyebrow {
+    font: 400 clamp(15px, 1.4vw, 20px)/1.2 "Instrument Serif", serif; font-style: italic;
+    color: var(--accent-2); margin-bottom: clamp(8px, 1.5vw, 20px);
+    opacity: 0; animation: fade 1.2s var(--ease) .9s forwards;
+  }
+  .name {
+    display: flex; align-items: baseline; justify-content: center; flex-wrap: nowrap;
+    font-size: clamp(64px, 19vw, 330px);
+    line-height: .82;
+    letter-spacing: -.045em;
+    user-select: none;
+  }
+  .word { display: inline-flex; overflow: hidden; padding: .04em .02em .08em; }
+  .gap { width: .22em; }
+  .ch {
+    display: inline-block;
+    font-variation-settings: "wght" var(--w, 300);
+    transform: translateY(105%) rotate(8deg);
+    animation: rise 1.4s var(--ease) forwards;
+    animation-delay: calc(var(--i) * 70ms + 200ms);
+    will-change: transform, font-variation-settings;
+  }
+  .ch.serif {
+    font-family: "Instrument Serif", serif; font-style: italic; font-weight: 400;
+    letter-spacing: -.02em; color: var(--accent);
+  }
+  @keyframes rise { to { transform: none; } }
+
+  .tagline {
+    margin-top: clamp(14px, 2.4vw, 34px);
+    max-width: 34ch;
+    font-size: clamp(16px, 1.55vw, 22px); line-height: 1.4; font-weight: 300; color: var(--ink);
+    opacity: 0; animation: fade 1.2s var(--ease) 1.2s forwards;
+  }
+  .tagline em { font-family: "Instrument Serif", serif; font-size: 1.2em; }
+  .swap { display: inline-grid; vertical-align: bottom; overflow: hidden; height: 1.4em; color: var(--accent); text-align: left; }
+  .swap span {
+    grid-area: 1 / 1; font-family: "Instrument Serif", serif; font-style: italic; font-size: 1.2em; line-height: 1.2;
+    transform: translateY(110%); transition: transform .9s var(--ease);
+  }
+  .swap span.on { transform: none; }
+  .swap span.out { transform: translateY(-110%); }
+  @keyframes fade { to { opacity: 1; } }
+
+  /* ---------- foot ---------- */
+  .foot {
+    display: grid; grid-template-columns: 1fr auto 1fr; align-items: end; gap: 16px;
+    border-top: 1px solid var(--line); padding-top: clamp(12px, 1.6vw, 20px);
+    opacity: 0; animation: fade 1.2s var(--ease) 1.5s forwards;
+  }
+  .meta { font: 500 11px/1.7 "JetBrains Mono", monospace; letter-spacing: .1em; text-transform: uppercase; color: var(--mute); }
+  .meta b { color: var(--ink); font-weight: 500; }
+  .links { display: flex; gap: clamp(6px, 1vw, 12px); justify-self: center; }
+  .pill {
+    position: relative; display: inline-flex; align-items: center; gap: 8px;
+    padding: 12px 20px; border: 1px solid var(--line); border-radius: 999px;
+    font: 500 12px/1 "JetBrains Mono", monospace; letter-spacing: .08em; text-transform: uppercase;
+    overflow: hidden; transition: color .5s var(--ease), border-color .5s var(--ease);
+  }
+  .pill::before {
+    content: ""; position: absolute; inset: 0; z-index: -1; background: var(--ink);
+    border-radius: inherit; transform: translateY(101%); transition: transform .55s var(--ease);
+  }
+  .pill:hover { color: var(--bg); border-color: var(--ink); }
+  .pill:hover::before { transform: none; }
+  .pill.primary { border-color: var(--accent); color: var(--accent); }
+  .pill.primary::before { background: var(--accent); }
+  .pill.primary:hover { color: var(--bg); }
+  .arrow { display: inline-block; transition: transform .5s var(--ease); }
+  .pill:hover .arrow { transform: translate(3px, -3px) rotate(0deg); }
+  .meta.right { justify-self: end; text-align: right; }
+
+  /* ---------- cursor ---------- */
+  .cursor {
+    position: fixed; left: 0; top: 0; z-index: 10; pointer-events: none;
+    width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%;
+    background: var(--ink); mix-blend-mode: difference;
+    transition: width .45s var(--ease), height .45s var(--ease), margin .45s var(--ease);
+  }
+  .cursor.big { width: 84px; height: 84px; margin: -42px 0 0 -42px; }
+
+  /* ---------- responsive ---------- */
+  @media (max-width: 760px) {
+    body, a { cursor: auto; }
+    .cursor { display: none; }
+    .bar .clock { display: none; }
+    .foot { grid-template-columns: 1fr; justify-items: center; text-align: center; }
+    .meta, .meta.right { justify-self: center; text-align: center; }
+    .meta.left { display: none; }
+    .links { flex-wrap: wrap; justify-content: center; }
+    .pill { padding: 11px 16px; }
+  }
+  @media (hover: none) { body, a { cursor: auto; } .cursor { display: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .001s !important; animation-delay: 0s !important; transition-duration: .001s !important; }
+  }
+</style>
+</head>
+<body>
+<section class="hero" id="hero" aria-label="MD SAIF">
+  <canvas id="field" aria-hidden="true"></canvas>
+  <div class="glow" id="glow" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="bar">
+    <span class="mark">MD&mdash;Saif &copy;2026</span>
+    <span class="clock" id="clock">IST 00:00:00</span>
+    <span class="status"><i class="dot"></i>Open to new work</span>
+  </header>
+
+  <div class="center">
+    <p class="eyebrow">Software engineer &amp; builder</p>
+    <h1 class="name" id="name" aria-label="MD SAIF">
+      <span class="word" data-word="MD"></span><span class="gap"></span><span class="word serif" data-word="Saif"></span>
+    </h1>
+    <p class="tagline">
+      I build systems that hold under pressure and interfaces that feel
+      <span class="swap" id="swap"><span class="on">inevitable.</span><span>effortless.</span><span>alive.</span><span>honest.</span></span>
+    </p>
+  </div>
+
+  <footer class="foot">
+    <div class="meta left">Backend &middot; Frontend &middot; AI<br><b>Engineering with taste</b></div>
+    <nav class="links">
+      <a class="pill primary magnet" href="https://github.com/mdsaif45" target="_blank" rel="noopener">GitHub <span class="arrow">&nearr;</span></a>
+      <a class="pill magnet" href="#" aria-label="LinkedIn">LinkedIn <span class="arrow">&nearr;</span></a>
+      <a class="pill magnet" href="#" aria-label="Contact">Say hello <span class="arrow">&nearr;</span></a>
+    </nav>
+    <div class="meta right">Scroll not required<br><b>Everything is here</b></div>
+  </footer>
+</section>
+
+<div class="cursor" id="cursor" aria-hidden="true"></div>
+
+<script>
+(() => {
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const mouse = { x: innerWidth / 2, y: innerHeight / 2, active: false };
+
+  /* ---- split name into letters ---- */
+  let idx = 0;
+  const chars = [];
+  document.querySelectorAll(".word").forEach(w => {
+    const serif = w.classList.contains("serif");
+    [...w.dataset.word].forEach(c => {
+      const s = document.createElement("span");
+      s.className = "ch" + (serif ? " serif" : "");
+      s.textContent = c;
+      s.style.setProperty("--i", idx++);
+      s.setAttribute("aria-hidden", "true");
+      w.appendChild(s);
+      chars.push(s);
+    });
+  });
+
+  /* ---- clock ---- */
+  const clock = document.getElementById("clock");
+  const tick = () => {
+    const t = new Date().toLocaleTimeString("en-GB", { timeZone: "Asia/Kolkata", hour12: false });
+    clock.textContent = "IST " + t;
+  };
+  tick(); setInterval(tick, 1000);
+
+  /* ---- rotating word ---- */
+  const words = [...document.querySelectorAll("#swap span")];
+  let wi = 0;
+  setInterval(() => {
+    const cur = words[wi], next = words[(wi + 1) % words.length];
+    cur.classList.remove("on"); cur.classList.add("out");
+    next.classList.remove("out"); next.classList.add("on");
+    setTimeout(() => cur.classList.remove("out"), 900);
+    wi = (wi + 1) % words.length;
+  }, 2600);
+
+  /* ---- cursor + magnet ---- */
+  const cursor = document.getElementById("cursor");
+  let cx = mouse.x, cy = mouse.y;
+  addEventListener("pointermove", e => { mouse.x = e.clientX; mouse.y = e.clientY; mouse.active = true; });
+  document.querySelectorAll(".magnet").forEach(el => {
+    el.addEventListener("pointerenter", () => cursor.classList.add("big"));
+    el.addEventListener("pointerleave", () => { cursor.classList.remove("big"); el.style.transform = ""; });
+    el.addEventListener("pointermove", e => {
+      const r = el.getBoundingClientRect();
+      const dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2);
+      el.style.transform = `translate(${dx * .3}px, ${dy * .4}px)`;
+    });
+  });
+  document.getElementById("name").addEventListener("pointerenter", () => cursor.classList.add("big"));
+  document.getElementById("name").addEventListener("pointerleave", () => cursor.classList.remove("big"));
+
+  /* ---- glow parallax ---- */
+  const glow = document.getElementById("glow");
+
+  /* ---- flow field ---- */
+  const cv = document.getElementById("field");
+  const ctx = cv.getContext("2d");
+  let W, H, DPR, parts = [];
+  const N = () => Math.min(1400, Math.floor(innerWidth * innerHeight / 1100));
+  function resize() {
+    DPR = Math.min(devicePixelRatio || 1, 2);
+    W = cv.width = innerWidth * DPR; H = cv.height = innerHeight * DPR;
+    ctx.fillStyle = "#0b0b0a"; ctx.fillRect(0, 0, W, H);
+    parts = Array.from({ length: N() }, spawn);
+  }
+  function spawn() {
+    return { x: Math.random() * W, y: Math.random() * H, life: Math.random() * 200 + 60, hot: Math.random() < .12 };
+  }
+  // cheap smooth noise from layered sines
+  const noise = (x, y, t) =>
+    Math.sin(x * .0016 + t * .00021) + Math.cos(y * .0019 - t * .00017) +
+    Math.sin((x + y) * .0011 + t * .00013) * .8;
+
+  addEventListener("resize", resize);
+  resize();
+
+  function frame(t) {
+    // cursor easing
+    cx += (mouse.x - cx) * .18; cy += (mouse.y - cy) * .18;
+    cursor.style.transform = `translate(${cx}px, ${cy}px)`;
+
+    const nx = mouse.x / innerWidth - .5, ny = mouse.y / innerHeight - .5;
+    glow.style.transform = `translate(${nx * 12}vw, ${ny * 12}vh)`;
+
+    // letters react to proximity
+    for (const c of chars) {
+      const r = c.getBoundingClientRect();
+      const d = Math.hypot(mouse.x - (r.left + r.width / 2), mouse.y - (r.top + r.height / 2));
+      const k = Math.max(0, 1 - d / (innerWidth * .28));
+      const target = 220 + k * 680;
+      c._w = (c._w ?? 300) + (target - (c._w ?? 300)) * .12;
+      c.style.setProperty("--w", c._w.toFixed(0));
+    }
+
+    if (!reduce) {
+      ctx.fillStyle = "rgba(11,11,10,0.075)";
+      ctx.fillRect(0, 0, W, H);
+      const mx = mouse.x * DPR, my = mouse.y * DPR, R = 180 * DPR;
+      ctx.lineWidth = 1 * DPR;
+      for (const p of parts) {
+        const a = noise(p.x, p.y, t) * Math.PI;
+        let vx = Math.cos(a) * 1.1 * DPR, vy = Math.sin(a) * 1.1 * DPR;
+        if (mouse.active) {
+          const dx = p.x - mx, dy = p.y - my, d = Math.hypot(dx, dy);
+          if (d < R) { const f = (1 - d / R) * 4 * DPR; vx += (dx / d) * f; vy += (dy / d) * f; }
+        }
+        const ox = p.x, oy = p.y;
+        p.x += vx; p.y += vy; p.life--;
+        ctx.strokeStyle = p.hot ? "rgba(255,77,31,0.55)" : "rgba(241,237,228,0.16)";
+        ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(p.x, p.y); ctx.stroke();
+        if (p.life < 0 || p.x < 0 || p.x > W || p.y < 0 || p.y > H) Object.assign(p, spawn());
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
