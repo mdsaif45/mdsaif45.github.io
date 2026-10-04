@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MD SAIF</title>
-<meta name="description" content="MD SAIF — full-time software engineer building desktop, web, mobile and AI tooling. Taking select side projects.">
+<meta name="description" content="MD SAIF — full-time software engineer building desktop, web, mobile and AI tooling.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@100..900&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -74,13 +74,6 @@
   .bar > *:nth-child(2) { animation-delay: .1s; } .bar > *:nth-child(3) { animation-delay: .2s; }
   @keyframes drop { to { opacity: 1; transform: none; } }
   .mark { color: var(--ink); }
-  .status { display: inline-flex; align-items: center; gap: 10px; justify-self: end; white-space: nowrap; }
-  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); position: relative; flex: none; }
-  .dot::after {
-    content: ""; position: absolute; inset: 0; border-radius: 50%; background: var(--accent);
-    animation: ping 2s var(--ease) infinite;
-  }
-  @keyframes ping { 0% { transform: scale(1); opacity: .8; } 100% { transform: scale(3.4); opacity: 0; } }
 
   .nav { display: flex; gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 999px; backdrop-filter: blur(8px); }
   .tab {
@@ -278,9 +271,8 @@
   @media (max-width: 760px) {
     body, a, button { cursor: auto; }
     .cursor, .preview { display: none; }
-    .bar { grid-template-columns: auto 1fr; }
+    .bar { grid-template-columns: 1fr; justify-items: center; }
     .mark { display: none; }
-    .status { font-size: 10px; letter-spacing: .08em; }
     .tab { padding: 8px 11px; }
     .vhead p { display: none; }
     .row { grid-template-columns: 26px minmax(0, 1fr) 18px; align-items: start; }
@@ -301,7 +293,6 @@
     .vhead h2 { font-size: clamp(32px, 4.4vw, 60px); }
     .col li { font-size: clamp(16px, 1.5vw, 22px); }
   }
-  @media (max-width: 420px) { .status .long { display: none; } }
   @media (hover: none) { body, a, button { cursor: auto; } .cursor, .preview { display: none; } }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: .001s !important; animation-delay: 0s !important; transition-duration: .001s !important; }
@@ -321,7 +312,7 @@
       <button class="tab" role="tab" data-view="work" aria-selected="false">Work<sup>08</sup></button>
       <button class="tab" role="tab" data-view="skills" aria-selected="false">Skills</button>
     </nav>
-    <span class="status"><i class="dot"></i><span><span class="long">Full-time &middot; </span>Select side gigs</span></span>
+    <span aria-hidden="true"></span>
   </header>
 
   <main class="stage">
@@ -380,7 +371,7 @@
       <a class="pill magnet" href="#" aria-label="LinkedIn">LinkedIn <span class="arrow">&nearr;</span></a>
       <a class="pill magnet" href="#" aria-label="Contact">Say hello <span class="arrow">&nearr;</span></a>
     </nav>
-    <div class="meta right">Full-time engineer<br><b>Side projects by night</b></div>
+    <div aria-hidden="true"></div>
   </footer>
 </section>
 
